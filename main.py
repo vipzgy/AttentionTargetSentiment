@@ -11,8 +11,8 @@ import dataset
 random.seed(66)
 torch.manual_seed(66)
 
-parser = argparse.ArgumentParser(description='classificer')
-"""everything can be changed form here"""
+parser = argparse.ArgumentParser(description='classifier')
+"""everything can be changed in here"""
 # common
 parser.add_argument('-epochs', type=int, default=30)
 parser.add_argument('-batch-size', type=int, default=16)
@@ -44,7 +44,7 @@ parser.add_argument('-grayscale', type=str, default=None)
 parser.add_argument('-max-norm', type=float, default=None)
 parser.add_argument('-lr-scheduler', type=str, default=None)
 parser.add_argument('-clip-norm', type=str, default=None)
-parser.add_argument('-which-model', type=str, default='attention3')
+parser.add_argument('-which-model', type=str, default='vanilla')
 #
 parser.add_argument('-need-smallembed', action='store_true', default=False)
 parser.add_argument('-which-embedding', type=str, default='200d')
@@ -65,8 +65,6 @@ print("\nLoading data...")
 if args.which_data == 'Z':
     train_path = './data/Z_data/all.conll.train'
     train_data = dataset.MyDatasets(args, train_path)
-    # dev_path = ''
-    # dev_data = dataset.MyDatasets(args, dev_path, train=train_data)
     test_path = './data/Z_data/all.conll.test'
     test_data = dataset.MyDatasets(args, test_path, train=train_data)
 elif args.which_data == 'T':
@@ -91,22 +89,12 @@ for attr, value in sorted(args.__dict__.items()):
 # model and cuda
 m_model = None
 if args.snapshot is None:
-    if args.which_model == 'attention':
-        m_model = model.Attention(args, train_data.embedding)
-    elif args.which_model == 'attention2':
-        m_model = model.Attention2(args, train_data.embedding)
-    elif args.which_model == 'attention3':
-        m_model = model.Attention3(args, train_data.embedding)
-    elif args.which_model == 'attention4':
-        m_model = model.Attention4(args, train_data.embedding)
-    # elif args.which_model == 'attentioncontext':
-    #     m_model = model.AttentionContext(args, train_data.embedding)
-    elif args.which_model == 'attentioncontextbilstm':
-        m_model = model.AttentionContextBiLSTM(args, train_data.embedding)
-    # elif args.which_model == 'attentioncontextgated':
-    #     m_model = model.AttentionContextGated(args, train_data.embedding)
-    elif args.which_model == 'attentioncontextgatedbilstm':
-        m_model = model.AttentionContextGatedBiLSTM(args, train_data.embedding)
+    if args.which_model == 'vanilla':
+        m_model = model.Vanilla(args, train_data.embedding)
+    elif args.which_model == 'contextualized':
+        m_model = model.Contextualized(args, train_data.embedding)
+    elif args.which_model == 'contextualizedgates':
+        m_model = model.ContextualizedGates(args, train_data.embedding)
 else:
     print('\nLoading model from [%s]...' % args.snapshot)
     try:
@@ -121,13 +109,13 @@ if args.cuda:
 # train and predict
 torch.set_num_threads(1)
 if args.getF1:
-    """用已经得到的最好的模型去测一下F1"""
+
     train.getF1(args, m_model, test_data.iterator, train_data.vocabulary_label)
 elif args.test:
-    """用已经得到的最好的模型去得到结果"""
+
     train.test(args, m_model, test_data.iterator)
 elif args.grayscale is not None:
-    """得到灰度图"""
+
     pass
 else:
     train.train(args, m_model, train_data.iterator, test_data.iterator)

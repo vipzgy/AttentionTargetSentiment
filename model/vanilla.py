@@ -7,12 +7,12 @@ from torch.autograd import Variable
 from torch.nn import Parameter
 
 
-class Attention3(nn.Module):
+class Vanilla(nn.Module):
     """
     这一种是加了batch的，但是算target还是要一个一个的算的，所以仍然不是多线程的，效率并没有提升多高
     """
     def __init__(self, args, m_embedding):
-        super(Attention3, self).__init__()
+        super(Vanilla, self).__init__()
         self.args = args
 
         self.embedding = nn.Embedding(args.embed_num, args.embed_dim, max_norm=args.max_norm)
@@ -38,7 +38,6 @@ class Attention3(nn.Module):
         self.linear_2 = nn.Linear(args.hidden_size * 2, args.label_num, bias=True)
         nn.init.xavier_uniform(self.linear_2.weight)
 
-    # batch > 1 不使用attbatch
     def forward(self, x, target_start, target_end):
         x = self.embedding(x)
         x = self.dropout(x)
