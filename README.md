@@ -1,2 +1,2 @@
-# AttentionTargetSentiment
-reproduce "Attention Modeling for Targeted Sentiment"
+# classifier
+Attention Modeling for Targeted Sentiment

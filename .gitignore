@@ -1,0 +1,11 @@
+__pycache__/
+data/6B.200d.pkl
+data/840B.300d.pkl
+data/glove.6B.200d.txt
+data/glove.840B.300d.txt
+data/glove.twitter.27B.200d.txt
+data/twitter.27B.200d.pkl
+__pycache__/
+snapshot/
+.idea/
+test.py
